@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
 
 app.get("/results", (req, res) => {
     var query = req.query.search;
-    var url = "http://omdbapi.com/?apikey=thewdb&s=" + query;
+    var url = `http://omdbapi.com/?apikey=thewdb&s=${query}`;
     request(url, (error, response, body) => {
         if (!error && response.statusCode == 200) {
             var data = JSON.parse(body)
@@ -22,5 +22,5 @@ app.get("/results", (req, res) => {
 
 
 app.listen(3000, () => {
-    console.log("Movie server started!");
+    console.log(`Movie server started!`);
 });
