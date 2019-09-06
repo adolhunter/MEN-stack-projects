@@ -1,7 +1,8 @@
 var request = require("request");
 
-request("http://www.google.com", (error, response, body) => {
+request("https://jsonplaceholder.typicode.com/users/1", (error, response, body) => {
     if (!error && response.statusCode == 200) {
-        console.log(body);
+        var parsedData = JSON.parse(body);
+        console.log(parsedData.name);
     }
 });
