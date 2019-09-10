@@ -1,4 +1,5 @@
 var express = require("express");
+methodOverride = require("method-override");
 bodyParser = require("body-parser");
 mongoose = require("mongoose");
 app = express();
@@ -11,6 +12,7 @@ mongoose.connect('mongodb://localhost:27017/restful_blog_app', {
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
 
 //Mongoose setup
 var blogSchema = new mongoose.Schema({
@@ -54,7 +56,7 @@ app.post("/blogs", (req, res) => {
     Blog.create(req.body.blog, (err, newBlog) => {
         if (err) {
             res.render("new");
-        //then, redirect to the index
+            //then, redirect to the index
         } else {
             res.redirect("/blogs");
         }
@@ -64,14 +66,39 @@ app.post("/blogs", (req, res) => {
 
 //SHOW route
 app.get("/blogs/:id", (req, res) => {
-    Blog.findById(req.params.id,(err,foundBlog) => {
+    Blog.findById(req.params.id, (err, foundBlog) => {
         if (err) {
             res.redirect("/blogs");
         } else {
-            res.render("show", {blog: foundBlog});
+            res.render("show", { blog: foundBlog });
         }
     });
 });
+
+
+//EDIT route
+app.get("/blogs/:id/edit", (req, res) => {
+    Blog.findById(req.params.id, (err, foundBlog) => {
+        if (err) {
+            res.redirect("/blogs");
+        } else {
+            res.render("edit", { blog: foundBlog });
+        }
+    })
+});
+
+//UPDATE route
+app.put("/blogs/:id", (req, res) => {
+    Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updatedBlog) => {
+        if (err) {
+            res.redirect("/blogs");
+        } else {
+            res.redirect("/blogs/" + req.params.id)
+        }
+    });
+});
+
+//DESTROY route
 
 app.listen(3000, () => {
     console.log("server is running!");
