@@ -15,6 +15,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public"))
 
+app.use(require("express-session")({
+    secret: "whatever you want to put!",
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 
 app.get("/", (req, res) => {
@@ -106,6 +116,28 @@ app.post("/campgrounds/:id/comments", function (req, res) {
 
 });
 
+//=====================
+//Auth routes
+//=====================
+
+//show register form
+app.get("/register", (req,res) => {
+    res.render("register");
+})
+
+app.post("/register", (req,res) => {
+    var newUser = new User({username: req.body.username});
+    User.register(newUser, req.body.password, (err, User) => {
+        if (err) {
+            console.log(err);
+            res.render("register");
+            return;
+        }
+        passport.authenticate("local")(req,res,()=> {
+            res.redirect("/campgrounds");
+        });
+    })
+});
 
 app.listen(3000, () => {
     console.log("server started!");
