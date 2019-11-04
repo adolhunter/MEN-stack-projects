@@ -30,7 +30,7 @@ router.post("/register", (req, res) => {
 
 //show login form
 router.get("/login", (req, res) => {
-    res.render("login", {message: req.flash("error")});
+    res.render("login");
 })
 
 //handling login logic
@@ -44,16 +44,8 @@ router.post("/login", passport.authenticate("local", {
 //logout route
 router.get("/logout", (req, res) => {
     req.logout();
+    req.flash("success", "You logged out!");
     res.redirect("/campgrounds");
 });
-
-
-//middleware
-function isLoggedIn(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect("/login")
-}
 
 module.exports = router;
